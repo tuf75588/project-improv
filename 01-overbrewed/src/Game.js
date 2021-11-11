@@ -65,6 +65,60 @@ function getRandomOrder() {
 }
 
 function Game() {
+  const [gameOver, setGameOver] = useState(false);
+  const [started, setStarted] = useState(false);
+  const [gameEnd, setGameEnd] = useState(new Date());
+  const [secondsLeft, setSecondsLeft] = useState(0);
+  const [score, setScore] = useState(0);
+  const [badRecipe, setBadRecipe] = useState(false);
+  const [currentOrder, setCurrentOrder] = useState({
+    name: 'NO ORDER YET',
+  });
+  const [selectedIngredient, setSelectedIngredient] = useState(-1);
+  const [currentIngredients, setCurrentIngredients] = useState([]);
+  useEffect(() => {
+    const listener = (event) => {
+      if (!started || gameOver) {
+        if (event.key === ' ') {
+          backgroundSound.play();
+          setScore(0);
+          setGameOver(false);
+          setStarted(true);
+          setSelectedIngredient(0);
+          setCurrentOrder(getRandomOrder());
+          setGameEnd(Date.now() + 62 * 1000);
+          setSecondsLeft(62);
+        }
+      }
+      if (started) {
+        if (event.key === 'ArrowRight') {
+          setSelectedIngredient((prevValue) => {
+            const nextIndex = prevValue + 1;
+            return nextIndex >= ingredients.length ? 0 : nextIndex;
+          });
+        } else if (event.key === 'ArrowLeft') {
+          setSelectedIngredient((prevValue) => {
+            const nextIndex = prevValue - 1;
+            return nextIndex < 0 ? ingredients.length - 1 : nextIndex;
+          });
+        } else if (event.key === 'Enter') {
+          setCurrentIngredients((prevValue) => [
+            ...prevValue,
+            {
+              id: Date.now(),
+              ...ingredients[selectedIngredient],
+            },
+          ]);
+        }
+      }
+    };
+    if (!badRecipe) {
+      document.addEventListener('keydown', listener);
+    }
+    // for when the component unmounts
+    return () => document.removeEventListener('keydown', listener);
+  }, [gameOver, started, badRecipe, selectedIngredient]);
+
   return <div>let the game begin!</div>;
 }
 
