@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import styles from './Game.module.css';
 
 const backgroundSound = new Audio(
   'https://freesound.org/data/previews/423/423689_3589115-hq.mp3'
@@ -119,6 +120,36 @@ function Game() {
     return () => document.removeEventListener('keydown', listener);
   }, [gameOver, started, badRecipe, selectedIngredient]);
 
+  useEffect(() => {
+    if (currentIngredients.length) {
+      for (let i = 0; i < currentIngredients.length; i++) {
+        if (currentOrder[i].name !== currentIngredients[i].name) {
+          setTimeout(() => {
+            setBadRecipe(false);
+            setCurrentIngredients([]);
+          }, 2000);
+          wrongSound.currentTime = 0;
+          wrongSound.play();
+          setScore((prevValue) => prevValue - currentOrder.length);
+          setGameEnd((prevValue) => prevValue - currentOrder.length * 1000);
+          return setBadRecipe(true);
+        }
+      }
+      if (currentIngredients.length === currentOrder.length) {
+        setTimeout(() => {
+          if (!gameOver) {
+            setScore((prevValue) => prevValue + currentOrder.length);
+            setBadRecipe(false);
+            setCurrentIngredients([]);
+            setCurrentOrder(getRandomOrder());
+          }
+        }, 1000);
+        orderReadySound.currentTime = 0;
+        orderReadySound.play();
+        return setBadRecipe(true);
+      }
+    }
+  }, [currentOrder, gameOver, currentIngredients]);
   return <div>let the game begin!</div>;
 }
 
