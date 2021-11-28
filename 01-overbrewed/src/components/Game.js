@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import CoffeeCup from './CoffeeCup';
 import styles from './Game.module.css';
 
 const backgroundSound = new Audio(
@@ -150,7 +151,52 @@ function Game() {
       }
     }
   }, [currentOrder, gameOver, currentIngredients]);
-  return <div>let the game begin!</div>;
+
+  useEffect(() => {
+    const intervalId = setInterval(() => {
+      let seconds = Math.round((gameEnd - Date.now()) / 1000);
+      if (seconds <= 0) {
+        seconds = 0;
+        if (started) {
+          clearInterval(intervalId);
+          setGameOver(true);
+          setCurrentOrder([
+            {
+              name: 'GAME OVER! 😭',
+            },
+          ]);
+          gameOverSound.currentTime = 0;
+          gameOverSound.play();
+        }
+      }
+      setSecondsLeft(seconds);
+    });
+  }, [gameEnd, started]);
+  return (
+    <div className={styles.game}>
+      <img
+        alt="background"
+        className={styles.background}
+        src="https://64.media.tumblr.com/90e492ee0cadaa2289e8d7287c22b122/tumblr_pa5l001s051u0zmo4o1_1280.gif"
+      />
+      <div className={styles.gamePerspective}>
+        {started && !gameOver && (
+          <div className={styles.gameInfo}>
+            <div>Score: {score}</div>
+            <div>Time remaining: {secondsLeft} </div>
+          </div>
+        )}
+        {gameOver && (
+          <div className={styles.gameInfo}>
+            <div>GAME OVER!</div>
+            <div>You scored: {score}</div>
+            <div>PRESS SPACE TO PLAY AGAIN.</div>
+          </div>
+        )}
+        <CoffeeCup ingredients={ingredients} />
+      </div>
+    </div>
+  );
 }
 
 export default Game;
