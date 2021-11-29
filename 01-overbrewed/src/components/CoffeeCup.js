@@ -6,7 +6,7 @@ function CoffeeCup({ ingredients }) {
       <div className={styles.cup}>
         {ingredients.map((ingredient) => (
           <div
-            key={ingredient.id}
+            key={ingredient.name}
             style={{
               background: ingredient.background,
               height: `${(1 / ingredients.length) * 100}%`,

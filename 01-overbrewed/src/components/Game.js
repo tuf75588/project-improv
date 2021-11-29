@@ -1,6 +1,8 @@
 import { useEffect, useState } from 'react';
 import CoffeeCup from './CoffeeCup';
 import styles from './Game.module.css';
+import Ingredients from './Ingredient';
+import OrderBox from './OrderBox';
 
 const backgroundSound = new Audio(
   'https://freesound.org/data/previews/423/423689_3589115-hq.mp3'
@@ -73,9 +75,11 @@ function Game() {
   const [secondsLeft, setSecondsLeft] = useState(0);
   const [score, setScore] = useState(0);
   const [badRecipe, setBadRecipe] = useState(false);
-  const [currentOrder, setCurrentOrder] = useState({
-    name: 'NO ORDER YET',
-  });
+  const [currentOrder, setCurrentOrder] = useState([
+    {
+      name: 'NO ORDER YET',
+    },
+  ]);
   const [selectedIngredient, setSelectedIngredient] = useState(-1);
   const [currentIngredients, setCurrentIngredients] = useState([]);
   useEffect(() => {
@@ -193,7 +197,22 @@ function Game() {
             <div>PRESS SPACE TO PLAY AGAIN.</div>
           </div>
         )}
-        <CoffeeCup ingredients={ingredients} />
+        {started && !gameOver && (
+          <Ingredients
+            badRecipe={badRecipe}
+            ingredients={ingredients}
+            selectedIngredient={selectedIngredient}
+          />
+        )}
+        <CoffeeCup ingredients={currentIngredients} />
+        <OrderBox
+          gameOver={gameOver}
+          ingredients={currentIngredients}
+          order={currentOrder}
+        />
+        {!started && (
+          <div className={styles.startButton}>PRESS SPACE TO START</div>
+        )}
       </div>
     </div>
   );
