@@ -174,7 +174,8 @@ function Game() {
         }
       }
       setSecondsLeft(seconds);
-    });
+    }, 1000);
+    return () => clearInterval(intervalId);
   }, [gameEnd, started]);
   return (
     <div className={styles.game}>
